@@ -271,8 +271,8 @@
   <div class="card">
     <div class="card-title">NOUVELLE TRANSACTION</div>
     <div class="person-row">
-      <button class="person-btn active" id="pb-moi"    onclick="selectPerson('Moi')">👤 Moi</button>
-      <button class="person-btn"        id="pb-femme"  onclick="selectPerson('Femme')">👤 Femme</button>
+      <button class="person-btn active" id="pb-nicolas"    onclick="selectPerson('Nicolas')">👤 Nicolas</button>
+      <button class="person-btn"        id="pb-maureen"  onclick="selectPerson('Maureen')">👤 Maureen</button>
       <button class="person-btn"        id="pb-commun" onclick="selectPerson('Commun')">👥 Commun</button>
     </div>
     <div class="type-toggle">
@@ -311,7 +311,7 @@
         <div class="field"><label>Description</label><input type="text" id="r-desc" placeholder="Ex: Loyer"></div>
         <div class="field"><label>Montant (€)</label><input type="number" id="r-amount" placeholder="0.00" min="0" step="0.01"></div>
         <div class="field"><label>Catégorie</label><select id="r-cat"></select></div>
-        <div class="field"><label>Qui</label><select id="r-person"><option>Moi</option><option>Femme</option><option>Commun</option></select></div>
+        <div class="field"><label>Qui</label><select id="r-person"><option>Nicolas</option><option>Maureen</option><option>Commun</option></select></div>
       </div>
       <button class="btn-primary btn-sm" onclick="addRecurring()">+ Ajouter</button>
     </div>
@@ -378,7 +378,7 @@ const CATS=['🛒 Alimentation','🏠 Logement','🚗 Transport','💊 Santé','
 ['inp-cat','r-cat'].forEach(id=>{const s=document.getElementById(id);if(s)CATS.forEach(c=>{const o=document.createElement('option');o.textContent=c;s.appendChild(o);});});
 
 let now=new Date(),viewMonth=now.getMonth(),viewYear=now.getFullYear();
-let currentPerson='Moi',currentType='depense',currentRecType='depense';
+let currentPerson='Nicolas',currentType='depense',currentRecType='depense';
 let transactions=JSON.parse(localStorage.getItem('budget_tx')||'[]');
 let recurrings  =JSON.parse(localStorage.getItem('budget_rec')||'null');
 let goals       =JSON.parse(localStorage.getItem('budget_goals')||'[]');
@@ -388,7 +388,7 @@ let chartInstance=null;
 
 if(!recurrings){
   recurrings=[
-    {id:1,desc:'Salaire',  type:'revenu', cat:'💰 Salaire',    person:'Moi',   amount:2500,enabled:true},
+    {id:1,desc:'Salaire',  type:'revenu', cat:'💰 Salaire',    person:'Nicolas',   amount:2500,enabled:true},
     {id:2,desc:'Loyer',    type:'depense',cat:'🏠 Logement',   person:'Commun',amount:900, enabled:true},
     {id:3,desc:'EDF',      type:'depense',cat:'🏠 Logement',   person:'Commun',amount:80,  enabled:true},
     {id:4,desc:'Internet', type:'depense',cat:'📱 Abonnements',person:'Commun',amount:35,  enabled:true},
@@ -407,7 +407,7 @@ function saveRec(){localStorage.setItem('budget_rec',JSON.stringify(recurrings))
 function saveGoals(){localStorage.setItem('budget_goals',JSON.stringify(goals));}
 function saveLimits(){localStorage.setItem('budget_limits',JSON.stringify(catLimits));}
 function saveDismissed(){localStorage.setItem('budget_dismissed',JSON.stringify(dismissedAlerts));}
-function pColor(p){return p==='Femme'?'#7C4DBB':p==='Commun'?'#1A8A6E':'#C84B2F';}
+function pColor(p){return p==='Maureen'?'#7C4DBB':p==='Commun'?'#1A8A6E':'#C84B2F';}
 function errFlash(...ids){ids.forEach(id=>{const el=document.getElementById(id);if(el){el.style.borderColor='#C84B2F';setTimeout(()=>el.style.borderColor='',1400);}});}
 
 // ---- MONTH ----
@@ -421,7 +421,7 @@ function changeMonth(d){
 }
 
 // ---- PERSON / TYPE ----
-function selectPerson(p){currentPerson=p;['moi','femme','commun'].forEach(id=>document.getElementById('pb-'+id).classList.remove('active'));document.getElementById('pb-'+p.toLowerCase()).classList.add('active');}
+function selectPerson(p){currentPerson=p;['nicolas','maureen','commun'].forEach(id=>document.getElementById('pb-'+id).classList.remove('active'));document.getElementById('pb-'+({'Nicolas':'nicolas','Maureen':'maureen','Commun':'commun'}[p])).classList.add('active');}
 function selectType(t){currentType=t;document.getElementById('btn-dep').className='type-btn'+(t==='depense'?' active-dep':'');document.getElementById('btn-rev').className='type-btn'+(t==='revenu'?' active-rev':'');}
 function selRecType(t){currentRecType=t;document.getElementById('rbtn-dep').className='type-btn'+(t==='depense'?' active-dep':'');document.getElementById('rbtn-rev').className='type-btn'+(t==='revenu'?' active-rev':'');}
 
@@ -458,7 +458,7 @@ function toggleRec(id,val){const r=recurrings.find(r=>r.id===id);if(r){r.enabled
 function openEdit(id){
   const r=recurrings.find(r=>r.id===id);if(!r)return;
   const row=document.getElementById('er-'+id);if(!row)return;
-  row.innerHTML=`<div class="field"><label>Description</label><input type="text" id="ed-d-${id}" value="${r.desc}"></div><div class="field"><label>Montant (€)</label><input type="number" id="ed-a-${id}" value="${r.amount}" min="0" step="0.01"></div><div class="field"><label>Catégorie</label><select id="ed-c-${id}">${CATS.map(c=>`<option${c===r.cat?' selected':''}>${c}</option>`).join('')}</select></div><div class="field"><label>Qui</label><select id="ed-p-${id}"><option${r.person==='Moi'?' selected':''}>Moi</option><option${r.person==='Femme'?' selected':''}>Femme</option><option${r.person==='Commun'?' selected':''}>Commun</option></select></div><div class="field"><label>Type</label><select id="ed-t-${id}"><option value="depense"${r.type==='depense'?' selected':''}>Dépense</option><option value="revenu"${r.type==='revenu'?' selected':''}>Revenu</option></select></div><button class="btn-primary btn-sm" onclick="saveEdit(${id})">Enregistrer</button><button class="btn-outline" onclick="cancelEdit(${id})">Annuler</button>`;
+  row.innerHTML=`<div class="field"><label>Description</label><input type="text" id="ed-d-${id}" value="${r.desc}"></div><div class="field"><label>Montant (€)</label><input type="number" id="ed-a-${id}" value="${r.amount}" min="0" step="0.01"></div><div class="field"><label>Catégorie</label><select id="ed-c-${id}">${CATS.map(c=>`<option${c===r.cat?' selected':''}>${c}</option>`).join('')}</select></div><div class="field"><label>Qui</label><select id="ed-p-${id}"><option${r.person==='Nicolas'?' selected':''}>Nicolas</option><option${r.person==='Maureen'?' selected':''}>Maureen</option><option${r.person==='Commun'?' selected':''}>Commun</option></select></div><div class="field"><label>Type</label><select id="ed-t-${id}"><option value="depense"${r.type==='depense'?' selected':''}>Dépense</option><option value="revenu"${r.type==='revenu'?' selected':''}>Revenu</option></select></div><button class="btn-primary btn-sm" onclick="saveEdit(${id})">Enregistrer</button><button class="btn-outline" onclick="cancelEdit(${id})">Annuler</button>`;
   row.classList.add('open');
 }
 function cancelEdit(id){const row=document.getElementById('er-'+id);if(row){row.innerHTML='';row.classList.remove('open');}}
