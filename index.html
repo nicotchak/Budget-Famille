@@ -2,7 +2,13 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Budget Famille">
+<meta name="theme-color" content="#1A1814">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
 <title>Budget Famille</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -694,6 +700,38 @@ initChartDates();
 render();
 document.getElementById('inp-amount').addEventListener('keydown',e=>{if(e.key==='Enter')addTransaction();});
 document.getElementById('inp-desc').addEventListener('keydown',  e=>{if(e.key==='Enter')addTransaction();});
+</script>
+
+<div id="ios-install-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1A1814;color:#fff;padding:16px 20px 28px;align-items:center;gap:14px;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,.3);">
+  <div style="font-size:28px;flex-shrink:0;">📲</div>
+  <div style="flex:1;">
+    <div style="font-size:14px;font-weight:600;margin-bottom:3px;">Installer l'application</div>
+    <div style="font-size:12px;opacity:.7;line-height:1.5;">Appuyez sur <strong>⎋ Partager</strong> puis <strong>"Sur l'écran d'accueil"</strong> pour installer Budget Famille</div>
+  </div>
+  <button onclick="dismissInstallBanner()" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;opacity:.6;flex-shrink:0;padding:4px;">×</button>
+</div>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('SW enregistré'))
+      .catch(err => console.log('SW erreur:', err));
+  });
+}
+// Install banner for iOS
+window.addEventListener('load', () => {
+  const isIos = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
+  const isStandalone = window.navigator.standalone;
+  const dismissed = localStorage.getItem('pwa_banner_dismissed');
+  if(isIos && !isStandalone && !dismissed){
+    const banner = document.getElementById('ios-install-banner');
+    if(banner) { banner.style.display = 'flex'; }
+  }
+});
+function dismissInstallBanner(){
+  localStorage.setItem('pwa_banner_dismissed','1');
+  document.getElementById('ios-install-banner').style.display='none';
+}
 </script>
 </body>
 </html>
